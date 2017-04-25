@@ -1,0 +1,55 @@
+//--------------------------------------------------------
+// NAME:  Mailbox
+// FUNC: 
+//--------------------------------------------------------
+template<class Item>
+Mailbox<Item>::Mailbox(const LONG cap) : capacity(cap)
+{
+  getSemaphore = new Semaphore(cap,0);    // Counts number of items in mailbox
+  putSemaphore = new Semaphore(cap,cap);  // Counts number of free slots in mailbox
+  queue = new std::queue<Item>;
+}
+
+
+
+//--------------------------------------------------------
+// NAME:  ~Mailbox
+// FUNC: 
+//--------------------------------------------------------
+template<class Item>
+Mailbox<Item>::~Mailbox()
+{
+  delete queue;
+  delete putSemaphore;
+  delete getSemaphore;
+}
+
+
+//--------------------------------------------------------
+// NAME:  put
+// FUNC:  Adds an item to the mailbox
+//--------------------------------------------------------
+template<class Item>
+void Mailbox<Item>::put(Item n)
+{
+  queue->push(n);
+  putSemaphore->wait();
+  getSemaphore->signal();
+}
+
+
+//--------------------------------------------------------
+// NAME:  get
+// FUNC:  Retrieves an item from the mailbox, if one is pre-
+//        sent. If no mail is present, the calling task is
+//        blocked
+//--------------------------------------------------------
+template<class Item>
+Item Mailbox<Item>::get()
+{
+  getSemaphore->wait();
+  Item result =  queue->front();
+  queue->pop();
+  putSemaphore->signal();
+  return result;
+}
