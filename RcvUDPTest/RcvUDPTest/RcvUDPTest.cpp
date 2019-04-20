@@ -7,6 +7,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 //#define UDP_PORT 27072
+//#define UDP_PORT 26090
 #define UDP_PORT 26090
 
 

@@ -1,1 +1,21 @@
-﻿
+﻿  NeuronDataCapture.cpp
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\sock_stream.h(36): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\sock_stream.h(41): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\sock_acceptor.h(20): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\sock_connector.h(20): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\sock_connector.h(26): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\lynxrecordfast.h(170): warning C4477: 'printf' : format string '%08X' requires an argument of type 'unsigned int', but variadic argument 1 has type 'int32_t *'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\lynxrecordfast.h(170): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'int32_t *'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\lynxrecordfast.h(170): warning C4477: 'printf' : format string '%08X' requires an argument of type 'unsigned int', but variadic argument 2 has type 'int32_t *'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\lynxrecordfast.h(170): warning C4313: 'printf': '%X' in format string conflicts with argument 2 of type 'int32_t *'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\basetimer.h(15): warning C4312: 'type cast': conversion from 'DWORD' to 'CBaseTimer *' of greater size
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\basetimer.h(20): warning C4311: 'type cast': pointer truncation from 'CBaseTimer *' to 'DWORD'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\basetimer.h(20): warning C4302: 'type cast': truncation from 'CBaseTimer *' to 'DWORD'
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\neurondatacapture.cpp(89): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\streamingdl\streamingdl\neurondatacapture\neurondatacapture\neurondatacapture.cpp(104): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Generating code
+  3 of 203 functions ( 1.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  NeuronDataCapture.vcxproj -> C:\StreamingDL\StreamingDL\NeuronDataCapture\x64\Release\NeuronDataCapture.exe

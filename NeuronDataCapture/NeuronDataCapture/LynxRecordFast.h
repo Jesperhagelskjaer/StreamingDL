@@ -59,6 +59,7 @@ public:
 		pMemPoolStart = 0;
 		pMemPoolReadPtr = 0;
 		pMemPoolWritePtr = 0;
+		sequenceNo = 0;
 		for (int i = 0; i <NUM_CHANNELS; i ++)
 			dataChStreams[i] = NULL;
 		dataStream = NULL;
@@ -113,14 +114,6 @@ public:
 
 		if ( pMemPoolWritePtr < (pMemPoolStart+MemPoolSize-RecordSize) )
 		{
-			/*
-			for (int j = 0; j < NUM_BOARDS; j++)
-				for (int i = 0; i < NUM_CHANNELS; i++)
-				{
-					*pMemPoolWritePtr = lxRecord.board[j].data[i];
-					pMemPoolWritePtr++;
-				}
-			*/
 			memcpy(pMemPoolWritePtr, lxRecord.board, sizeof(LxBoardsData));
 			pMemPoolWritePtr += RecordSize;
 
@@ -144,6 +137,18 @@ public:
 		if (checksum == 0) 
 			result = true;
 		return result;
+	}
+
+	bool CheckSequence(void)
+	{
+		bool valid = true;
+		if (sequenceNo != lxRecord.header.systemStatus)
+		{
+			printf("SEQ %d(%d)\n", lxRecord.header.systemStatus, sequenceNo);
+			valid = false;
+		}
+		sequenceNo = lxRecord.header.systemStatus + 1;
+		return valid;
 	}
 
 	void CreatTestData(int start)
@@ -314,9 +319,10 @@ public:
 	{
 		if (headerStream != NULL)
 		{
-			fprintf(headerStream, "%u,%u\n",
+			fprintf(headerStream, "%u,%u,%u\n",
 				    lxRecord.header.timestampHigh,
-			        lxRecord.header.timestampLow);
+			        lxRecord.header.timestampLow,
+					lxRecord.header.systemStatus);
 			/*
 			fprintf(headerStream, "%u,%u,%u,%u\n",
 				    lxRecord.header.timestampHigh,
@@ -371,4 +377,5 @@ private:
 	int32_t *pMemPoolReadPtr;
 	int32_t *pMemPoolWritePtr;
 	int32_t *pMemPoolStart;
+	uint32_t sequenceNo;
 };

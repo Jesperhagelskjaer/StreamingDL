@@ -18,8 +18,9 @@
 #define BAUD_RATE			115200
 #define CREATE_SINGLE_FILE  false	 // Store Lynx records in one file og a file for each 32 channels
 
-//#define NUM_RECORDS_TOTAL	180000 // Number of Lynx records to receive in 10 minutes (30 kHz)
-#define NUM_RECORDS_TOTAL	18000000 // Number of Lynx records to receive in 10 minutes (30 kHz)
+#define SAMPLE_RATE         30000  // 30 kHz sample rate
+#define NUM_RECORDS_TOTAL	180000 // Number of Lynx records to receive in 6 seconds (30 kHz)
+//#define NUM_RECORDS_TOTAL	18000000 // Number of Lynx records to receive in 10 minutes (30 kHz)
 //#define NUM_RECORDS_TOTAL	8400000 // Number of Lynx records to receive in 4 minutes (30 kHz)
 //#define NUM_RECORDS			83886 // Number of Lynx records to receive in 4 minutes (30 kHz) - Max heap space 1073741842 = 1 GByte Heap
 #define NUM_RECORDS			8388608 // Number of Lynx records to receive in 4 minutes (30 kHz) - Max heap space 1073741842 = 1 GByte Heap
@@ -49,8 +50,8 @@ void TestLynxRecord(LynxRecord &lynxRecord)
 // Function to test the serial port
 bool TestSerialPort(int port, int baudRate)
 {
-	char data[5000];
-	int num;
+	//char data[5000];
+	//int num;
 
 	CSerial* s = new CSerial();
 
@@ -135,6 +136,7 @@ int main(int argc, _TCHAR* argv[])
 		SOCK_UDP Socket;
 		LynxRecord lynxRecord;
 		CMsgTickTimer cTimer(RECORD_DELAY, "200ms laser on");
+
 		/* Not used now
 		CSerial* serialPort = new CSerial();
 
@@ -148,18 +150,33 @@ int main(int argc, _TCHAR* argv[])
 		char *pBuffer;
 		int bufSize;
 		unsigned int num = NUM_RECORDS_TOTAL;
+		unsigned int sec;
 		char dataFileNames[50];
 		char dataFileName[50];
 		char headerFileName[50];
 		time_t t = time(0);   // get time now
 		struct tm * now = localtime(&t);
 
+		printf("=================   Version 2.4   ======================\n");
+		printf("Recording raw sample data from HPP using UDP port %d\n", UDP_PORT);
+		printf("========================================================\n");
+		printf("Enter record length in seconds > ");
+		scanf("%d", &sec);
+		if (sec < 1) { // Minium 1 sec. recording
+			num = NUM_RECORDS_TOTAL;
+			printf("Too small using default %d samples %d sec\n", num, num/SAMPLE_RATE);
+		}
+		else {
+			num = sec * SAMPLE_RATE;
+			printf("Recording %d number of samples from 32 channels\n", num);
+		}
+
 		// Naming data and header text files
-		sprintf(dataFileNames, "LX_%d%02d%02d_%02d%02d%02d_D",
+		sprintf(dataFileNames, "data\\LX_%d%02d%02d_%02d%02d%02d_D",
 			now->tm_year + 1900, now->tm_mon + 1, now->tm_mday,
 			now->tm_hour, now->tm_min, now->tm_sec);
 		sprintf(dataFileName, "%s.txt", dataFileNames);
-		sprintf(headerFileName, "LX_%d%02d%02d_%02d%02d%02d_H.txt",
+		sprintf(headerFileName, "data\\LX_%d%02d%02d_%02d%02d%02d_H.txt",
 			now->tm_year + 1900, now->tm_mon + 1, now->tm_mday,
 			now->tm_hour, now->tm_min, now->tm_sec);
 
@@ -228,6 +245,7 @@ int main(int argc, _TCHAR* argv[])
 			sockaddr_in add = Socket.RecvFrom(pBuffer, bufSize);
 			if (lynxRecord.CheckSumOK()) // Verify using xor checksum of record data
 			{
+				lynxRecord.CheckSequence();
 				//lynxRecord.AppendDataFloatToFile();
 				if (lynxRecord.AppendDataToMemPool()) {
 					lynxRecord.AppendHeaderToFile();
