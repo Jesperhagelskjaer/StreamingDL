@@ -38,8 +38,10 @@ public:
         sockaddr_in from;
         int size = sizeof(from);
         int ret = recvfrom(sock, buffer, len, flags, reinterpret_cast<SOCKADDR *>(&from), &size);
-        if (ret != len)
-            throw std::system_error(WSAGetLastError(), std::system_category(), "recvfrom failed wrong record length");
+		if (ret != len) {
+			printf("Wrong recv lenght %d expected %d\n", ret, len);
+			throw std::system_error(WSAGetLastError(), std::system_category(), "recvfrom failed wrong record length");
+		}
 
         // make the buffer zero terminated used for testing
         //buffer[ret] = 0;

@@ -127,6 +127,8 @@ private:
 };
 
 //----------------------------------------------------------------------------------------------
+#define NUM_RX_RECORDS				322 //  Number of records in each UPD package (46*7)*200 = 64400
+char LynxRecords[sizeof(LxRecord)*NUM_RX_RECORDS];
 
 int main(int argc, _TCHAR* argv[])
 {
@@ -149,7 +151,7 @@ int main(int argc, _TCHAR* argv[])
 
 		char *pBuffer;
 		int bufSize;
-		unsigned int num = NUM_RECORDS_TOTAL;
+		int num = NUM_RECORDS_TOTAL;
 		unsigned int sec;
 		char dataFileNames[50];
 		char dataFileName[50];
@@ -242,23 +244,26 @@ int main(int argc, _TCHAR* argv[])
 		while (num > 0)
 		{
 			// Blocking until new record received
-			sockaddr_in add = Socket.RecvFrom(pBuffer, bufSize);
-			if (lynxRecord.CheckSumOK()) // Verify using xor checksum of record data
-			{
-				lynxRecord.CheckSequence();
-				//lynxRecord.AppendDataFloatToFile();
-				if (lynxRecord.AppendDataToMemPool()) {
-					lynxRecord.AppendHeaderToFile();
-					--num;
+			sockaddr_in add = Socket.RecvFrom(LynxRecords, sizeof(LynxRecords));
+			for (int i = 0; i < NUM_RX_RECORDS; i++) {
+				memcpy(pBuffer, &LynxRecords[i * sizeof(LxRecord)], bufSize);
+				if (lynxRecord.CheckSumOK()) // Verify using xor checksum of record data
+				{
+					lynxRecord.CheckSequence();
+					//lynxRecord.AppendDataFloatToFile();
+					if (lynxRecord.AppendDataToMemPool()) {
+						lynxRecord.AppendHeaderToFile();
+						--num;
+					}
+					else
+						cout << "Lynx record memory space error" << endl;
 				}
 				else
-					cout << "Lynx record memory space error" << endl;
+				{
+					cout << "Lynx record checksum error" << endl;
+				}
 			}
-			else
-			{
-				cout << "Lynx record checksum error" << endl;
-			}
-			printf("%d\r", num);
+			printf("%08d\r", num);
 		}
 		//cout << "Writing data to file: " << dataFileName;
 		//lynxRecord.AppendMemPoolIntToFile();
