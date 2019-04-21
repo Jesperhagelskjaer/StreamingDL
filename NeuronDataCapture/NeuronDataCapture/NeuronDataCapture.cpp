@@ -157,7 +157,7 @@ int main(int argc, _TCHAR* argv[])
 		time_t t = time(0);   // get time now
 		struct tm * now = localtime(&t);
 
-		printf("=================   Version 2.4   ======================\n");
+		printf("=================   Version 2.3   ======================\n");
 		printf("Recording raw sample data from HPP using UDP port %d\n", UDP_PORT);
 		printf("========================================================\n");
 		printf("Enter record length in seconds > ");

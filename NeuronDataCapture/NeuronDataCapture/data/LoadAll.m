@@ -25,7 +25,7 @@ end
 
 %start = 54473;
 start = 1;
-length = 20000;
+length = 30000-1;
 figure,
 surf(channels(start:start+length,:));
 xlabel('channels');
@@ -38,8 +38,8 @@ xlabel('samples');
 % 0 = stopped
 % 1 = measure average
 % 2 = search maximum peak
-title('Modes: stop(0), average(1), analyse(2)');
-ylabel('mode');
+title('Sequence number');
+ylabel('sequence');
 xlabel('sample');
 
 ch1 = channels(start:start+length, 1);
