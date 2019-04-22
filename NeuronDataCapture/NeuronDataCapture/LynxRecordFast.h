@@ -142,12 +142,12 @@ public:
 	bool CheckSequence(void)
 	{
 		bool valid = true;
-		if (sequenceNo != lxRecord.header.systemStatus)
+		if (sequenceNo != lxRecord.header.packetId)
 		{
-			printf("SEQ %d(%d)\n", lxRecord.header.systemStatus, sequenceNo);
+			printf("SEQ %d(%d)\n", lxRecord.header.packetId, sequenceNo);
 			valid = false;
 		}
-		sequenceNo = lxRecord.header.systemStatus + 1;
+		sequenceNo = lxRecord.header.packetId + 1;
 		return valid;
 	}
 
@@ -343,7 +343,7 @@ public:
 			fprintf(headerStream, "%u,%u,%u\n",
 				    lxRecord.header.timestampHigh,
 			        lxRecord.header.timestampLow,
-					lxRecord.header.systemStatus);
+					lxRecord.header.packetId);
 			/*
 			fprintf(headerStream, "%u,%u,%u,%u\n",
 				    lxRecord.header.timestampHigh,
