@@ -14,9 +14,8 @@
 #include "BaseTimer.h"
 #include "DataFileThread.h"
 
-#define PORT_NR				8
-#define BAUD_RATE			115200
-#define CREATE_SINGLE_FILE  false	 // Store Lynx records in one file og a file for each 32 channels
+//#define PORT_NR				8
+//#define BAUD_RATE			115200
 
 #define SAMPLE_RATE         30000  // 30 kHz sample rate
 #define NUM_RECORDS_TOTAL	180000 // Number of Lynx records to receive in 6 seconds (30 kHz)
@@ -152,16 +151,24 @@ int main(int argc, _TCHAR* argv[])
 		char *pBuffer;
 		int bufSize;
 		int num = NUM_RECORDS_TOTAL;
-		unsigned int sec;
+		unsigned int sec, mode;
 		char dataFileNames[50];
 		char dataFileName[50];
 		char headerFileName[50];
 		time_t t = time(0);   // get time now
 		struct tm * now = localtime(&t);
 
-		printf("=================   Version 2.3   ======================\n");
+		printf("============ Neuron Data Capture Ver. 2.3 ==============\n");
 		printf("Recording raw sample data from HPP using UDP port %d\n", UDP_PORT);
 		printf("========================================================\n");
+		printf("Capture in single (1) or seperate files (2) > ");
+		scanf("%d", &mode);
+		if (mode == 1) {
+			printf("Capturing raw sample data in a single binary file as int (.bin)\n");
+		} else {
+			mode = 2;
+			printf("Capturing raw sample data in seperate ASCII files (.txt)\n");
+		}
 		printf("Enter record length in seconds > ");
 		scanf("%d", &sec);
 		if (sec < 1) { // Minium 1 sec. recording
@@ -177,10 +184,11 @@ int main(int argc, _TCHAR* argv[])
 		sprintf(dataFileNames, "data\\LX_%d%02d%02d_%02d%02d%02d_D",
 			now->tm_year + 1900, now->tm_mon + 1, now->tm_mday,
 			now->tm_hour, now->tm_min, now->tm_sec);
-		sprintf(dataFileName, "%s.txt", dataFileNames);
+		sprintf(dataFileName, "%s.bin", dataFileNames); // Binary file when only all channels in one file
 		sprintf(headerFileName, "data\\LX_%d%02d%02d_%02d%02d%02d_H.txt",
 			now->tm_year + 1900, now->tm_mon + 1, now->tm_mday,
 			now->tm_hour, now->tm_min, now->tm_sec);
+
 
 		/* For test only
 		cTimer.Start();
@@ -201,18 +209,23 @@ int main(int argc, _TCHAR* argv[])
 
 		lynxRecord.OpenHeaderFile(headerFileName);
 
-		if (!CREATE_SINGLE_FILE)
-		{
+		if (mode == 1) { // Single file
+			if (!lynxRecord.OpenDataFile(dataFileName))
+			{
+				cout << "Could not open data file " << dataFileName << endl;
+				exit(0);
+			}
+			cout << "Saving data in single file: " << dataFileName << endl;
+		} else { // Seperate files
 			if (!lynxRecord.OpenChannelDataFiles(dataFileNames))
 			{
 				cout << "Could not open data files " << dataFileNames << endl;
 				exit(0);
 			}
+			cout << "Saving data in seperate files: " << dataFileNames << "*.txt" << endl;
 		}
-		else
-			lynxRecord.OpenDataFile(dataFileName);
 
-		DataFileThread fileThread(Thread::PRIORITY_NORMAL, "FileThread", &lynxRecord, CREATE_SINGLE_FILE);
+		DataFileThread fileThread(Thread::PRIORITY_NORMAL, "FileThread", &lynxRecord, (mode == 1));
 
 		//TestLynxRecord(lynxRecord);
 		//TestSerialPort(8, 115200);

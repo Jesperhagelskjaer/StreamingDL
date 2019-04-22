@@ -196,7 +196,7 @@ public:
 	{
 		bool result = true;
 		CloseDataFile(); // Close file if already opened
-		dataStream = fopen(fileName, "w"); // Truncate file 
+		dataStream = fopen(fileName, "wb"); // Truncate binary file, remove b when text
 		if (dataStream == NULL) {
 			cout << "Unable to open file: " << fileName << endl;
 			result = false;
@@ -215,7 +215,8 @@ public:
 			fputs("\n", dataStream);
 		}
 	}
-
+	
+	/* ASCII text version
 	void AppendMemPoolIntToFile()
 	{
 		char dataStr[1024];
@@ -262,6 +263,26 @@ public:
 							pBoardsData->board[j].data[31]
 							);
 				fputs(dataStr, dataStream);
+				pBoardsData++;
+				pMemPoolReadPtr = (int32_t *)pBoardsData;
+			}
+		}
+	}
+	*/
+
+	void AppendMemPoolIntToFile()
+	{
+		int len;
+		if (dataStream != NULL)
+		{
+			semaWaitForData.wait();
+			LxBoardsData *pBoardsData = (LxBoardsData *)pMemPoolReadPtr;
+			LxBoardsData *pMemPoolEndPtr = (LxBoardsData *)(pMemPoolWritePtr-RecordSize);
+			while (pBoardsData <= pMemPoolEndPtr) {
+				for (int j = 0; j < NUM_BOARDS; j++) {
+					len = fwrite(&(lxRecord.board[j].data[0]), sizeof(int32_t), NUM_CHANNELS, dataStream);
+					if (len <= 0) printf("Error writing to file\n");
+				}
 				pBoardsData++;
 				pMemPoolReadPtr = (int32_t *)pBoardsData;
 			}

@@ -1,9 +1,15 @@
 clear;
 close all;
-fileList = dir('LX_20190420_18*.txt');
+sec = 600;
+fileNames = 'LX_20190422_083907';
+path = '';
+fs = 30000;
+samples = fs*sec;
 
 NUM_CH = 32;
 
+% Search for text files
+fileList = dir([path fileNames '*.txt']);
 for i=1:size(fileList,1)
     channelName = fileList(i).name;
     if (channelName(20) == 'D')
@@ -23,9 +29,15 @@ for i=1:size(fileList,1)
     end
 end
 
-%start = 54473;
+% Search for binary data file
+binDataFile = [fileNames '_D.BIN'];
+if isfile(binDataFile)
+    channels = loadFile(path, binDataFile, [32 samples], 'int32')';
+end
+
+%% start = 54473;
 start = 1;
-length = 30000-1;
+length = fs*60-1;
 figure,
 surf(channels(start:start+length,:));
 xlabel('channels');
@@ -33,7 +45,7 @@ ylabel('samples');
 zlabel('amplitude');
 
 figure
-plot(header(start:start+length,3));
+plot(header(:,3));
 xlabel('samples');
 % 0 = stopped
 % 1 = measure average
