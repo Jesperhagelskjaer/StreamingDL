@@ -280,7 +280,7 @@ public:
 			LxBoardsData *pMemPoolEndPtr = (LxBoardsData *)(pMemPoolWritePtr-RecordSize);
 			while (pBoardsData <= pMemPoolEndPtr) {
 				for (int j = 0; j < NUM_BOARDS; j++) {
-					len = fwrite(&(lxRecord.board[j].data[0]), sizeof(int32_t), NUM_CHANNELS, dataStream);
+					len = fwrite(&(pBoardsData->board[j].data[0]), sizeof(int32_t), NUM_CHANNELS, dataStream);
 					if (len <= 0) printf("Error writing to file\n");
 				}
 				pBoardsData++;
